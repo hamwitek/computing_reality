@@ -4,6 +4,7 @@ import "./index.css";
 import AboutPage from "./pages/About.jsx";
 import StartPage from "./pages/StartPage.jsx";
 import ProjectStart from "./pages/ProjectStart.jsx";
+import ContactPage from "./pages/ContactPage.jsx";
 import HomeApi from "./pages/HomeApi.jsx";
 import Layout from "./pages/Layout.jsx";
 import SearchPage from "./pages/SearchPage.jsx";
@@ -28,6 +29,10 @@ const router = createBrowserRouter([
       {
         path: "/search",
         element: <SearchPage />,
+      },
+      {
+        path: "/contact",
+        element: <ContactPage />,
       },
       {
         path: "/start",
