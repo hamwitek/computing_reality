@@ -1,11 +1,10 @@
 import { useState } from "react";
-import ProductCard from "../components/ProductCard";
+
 import Features from "../components/Features";
 import IntroVid from "../components/IntroVid";
 import { classNames } from "../utils";
 
 function StartPage({}) {
-
 
   return (
     <>

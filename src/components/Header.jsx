@@ -35,12 +35,6 @@ export default function Header() {
               </a>
             </Link>
 
-            <Link to="/about">
-              <a className="text-gray-300 hover:text-gray-50">
-                About
-              </a>
-            </Link>
-
             <Link to="/">
               <a className="text-gray-300 hover:text-gray-50">
                 Features
@@ -50,6 +44,18 @@ export default function Header() {
             <Link to="/contact">
               <a className="text-gray-300 hover:text-gray-50">
                 Contact
+              </a>
+            </Link>
+
+            <Link to="/login">
+              <a className="text-gray-300 hover:text-gray-50">
+                Login
+              </a>
+            </Link>
+            
+            <Link to="/register">
+              <a className="text-gray-300 hover:text-gray-50">
+                Register
               </a>
             </Link>
 

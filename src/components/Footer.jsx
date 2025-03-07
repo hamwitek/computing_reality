@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "react-router-dom";
 
 export default function Footer() {
   return (
@@ -12,15 +13,24 @@ export default function Footer() {
             </p>
           </div>
           <div className="flex space-x-6">
-            <a href="#" className="hover:text-gray-400 text-white">
-              About
-            </a>
-            <a href="#" className="hover:text-gray-400 text-white">
-              Contact
-            </a>
+
+
+            <Link to="/about">
+              <a className="text-gray-300 hover:text-gray-50">
+                About
+              </a>
+            </Link>
+
+            <Link to="/contact">
+              <a className="text-gray-300 hover:text-gray-50">
+                Contact
+              </a>
+            </Link>
+
             <a href="#" className="hover:text-gray-400 text-white">
               Privacy Policy
             </a>
+
           </div>
         </div>
         <div className="flex justify-center mt-8 space-x-6">
