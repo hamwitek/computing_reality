@@ -30,6 +30,29 @@ class Token(Base):
     user: Mapped["User"] = relationship(back_populates="tokens")
 
 
+# Add to your models.py file
+
+
+class PasswordResetToken(Base):
+    """Token used for password reset functionality"""
+
+    __tablename__ = "password_reset_tokens"
+
+    created: Mapped[datetime] = mapped_column(
+        default=lambda: datetime.now(timezone.utc)
+    )
+    token: Mapped[str] = mapped_column(unique=True, index=True)
+    user_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
+    user: Mapped["User"] = relationship(back_populates="reset_tokens")
+    used: Mapped[bool] = mapped_column(
+        default=False
+    )  # Track if the token has been used
+
+
+# Add this relationship to your User model
+# reset_tokens: Mapped[list["PasswordResetToken"]] = relationship(back_populates="user")
+
+
 class CompanyType(Base):
     __tablename__ = "company_types"
     name: Mapped[str]
@@ -96,6 +119,9 @@ class User(Base):
     # Auth
     is_superuser: Mapped[bool] = mapped_column(Boolean, default=False)
     tokens: Mapped[list["Token"]] = relationship(back_populates="user")
+    reset_tokens: Mapped[list["PasswordResetToken"]] = relationship(
+        back_populates="user"
+    )
 
     @property
     def full_name(self) -> str:

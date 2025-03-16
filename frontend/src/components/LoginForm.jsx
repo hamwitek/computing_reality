@@ -1,8 +1,9 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import authStore from "../store/authStore";
 
 export default function LoginForm() {
+  const API_URL = import.meta.env.VITE_API_URL;
   const navigate = useNavigate();
 
   const { setToken } = authStore();
@@ -51,7 +52,7 @@ export default function LoginForm() {
       formData.append("password", password);
 
       try {
-        const response = await fetch("http://localhost:8000/v1/auth/token", {
+        const response = await fetch(`${API_URL}/auth/token`, {
           method: "POST",
           body: formData,
         });
@@ -136,6 +137,11 @@ export default function LoginForm() {
               </button>
             </div>
           </form>
+          <Link to="/forgot-password">
+            <p className="mt-4 text-indigo-600 underline text-small">
+              Forgot password
+            </p>
+          </Link>
         </div>
       </div>
     </div>

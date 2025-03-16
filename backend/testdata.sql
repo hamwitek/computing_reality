@@ -1,3 +1,4 @@
+-- YOU NEED TO CREATE A USER BEFORE YOU RUN THESE QUERIES, e.g using the register-form
 -- Company Types
 INSERT INTO company_types (id, name)
 VALUES (1, 'Corporation'),
@@ -99,7 +100,7 @@ VALUES (
         CURRENT_TIMESTAMP,
         FALSE
     );
--- User Course Enrollments with correct UPPERCASE enum values
+-- User Course Enrollments
 INSERT INTO user_course_enrollments (
         user_id,
         course_id,
@@ -121,31 +122,24 @@ VALUES -- John Doe's enrollments
         1,
         2,
         CURRENT_TIMESTAMP - INTERVAL '10 days',
-        'COMPLETED',
+        'IN_PROGRESS',
         NULL,
-        95
+        NULL
     ),
+    -- Jane Smith's enrollments
     (
         1,
         3,
-        CURRENT_TIMESTAMP - INTERVAL '30 days',
+        CURRENT_TIMESTAMP - INTERVAL '60 days',
         'COMPLETED',
-        NULL,
-        45
+        CURRENT_TIMESTAMP - INTERVAL '30 days',
+        88.0
     ),
     (
         1,
         4,
-        CURRENT_TIMESTAMP - INTERVAL '10 days',
-        'IN_PROGRESS',
-        NULL,
-        NULL
-    ),
-    (
-        1,
-        5,
-        CURRENT_TIMESTAMP - INTERVAL '10 days',
-        'IN_PROGRESS',
-        NULL,
-        NULL
+        CURRENT_TIMESTAMP - INTERVAL '25 days',
+        'COMPLETED',
+        CURRENT_TIMESTAMP - INTERVAL '2 days',
+        94.7
     );

@@ -10,7 +10,6 @@ export default function GoogleMaps() {
         center: { lat: 59.31416, lng: 18.06408 },
         zoom: 17
     });
-    const [mapBounds, setMapBounds] = useState(null);
 
     useEffect(() => {
         const loader = new Loader({
@@ -24,9 +23,9 @@ export default function GoogleMaps() {
                 zoom: mapState.zoom,
                 mapTypeId: 'satellite',
                 disableDefaultUI: true,
-                zoomControl: true,
+                zoomControl: false,
                 mapTypeControl: false,
-                scaleControl: true,
+                scaleControl: false,
                 streetViewControl: false,
                 rotateControl: false,
                 fullscreenControl: false,
@@ -36,19 +35,6 @@ export default function GoogleMaps() {
             });
 
             googleMapRef.current = map;
-
-            map.addListener('bounds_changed', () => {
-                const bounds = map.getBounds();
-                const ne = bounds.getNorthEast();
-                const sw = bounds.getSouthWest();
-                
-                setMapBounds({
-                    north: ne.lat(),
-                    east: ne.lng(),
-                    south: sw.lat(),
-                    west: sw.lng()
-                });
-            });
 
             map.addListener('idle', () => {
                 const center = map.getCenter();
@@ -106,28 +92,6 @@ export default function GoogleMaps() {
         }
     };
 
-    const exportCoordinates = () => {
-        if (!mapBounds || !mapState.center) return;
-
-        const coordinateData = {
-            center: mapState.center,
-            bounds: mapBounds,
-            zoom: mapState.zoom,
-            timestamp: new Date().toISOString()
-        };
-
-        const dataStr = JSON.stringify(coordinateData, null, 2);
-        const dataBlob = new Blob([dataStr], { type: 'application/json' });
-        const url = window.URL.createObjectURL(dataBlob);
-        const link = document.createElement('a');
-        link.href = url;
-        link.download = 'map-coordinates.json';
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        window.URL.revokeObjectURL(url);
-    };
-
     return (
         <section className="flex flex-col h-[70vh] items-center justify-center w-full bg-gray-200">
             <div ref={mapRef} className="w-[50%] h-[80%]">
@@ -140,27 +104,15 @@ export default function GoogleMaps() {
                 >
                     Capture Map
                 </button>
-                <button 
-                    onClick={exportCoordinates}
-                    className="mt-4 px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600"
-                >
-                    Export Coordinates
-                </button>
                 {capturedImage && (
                     <button 
                         onClick={downloadImage}
-                        className="mt-4 px-4 py-2 bg-purple-500 text-white rounded hover:bg-purple-600"
+                        className="mt-4 px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600"
                     >
                         Download Map
                     </button>
                 )}
             </div>
-            {mapBounds && (
-                <div className="mt-4 text-sm text-gray-600">
-                    <p>Center: {mapState.center.lat.toFixed(6)}, {mapState.center.lng.toFixed(6)}</p>
-                    <p>Zoom: {mapState.zoom}</p>
-                </div>
-            )}
         </section>
     );
 }

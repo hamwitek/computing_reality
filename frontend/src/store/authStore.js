@@ -1,4 +1,5 @@
 import { create } from "zustand";
+const API_URL = import.meta.env.VITE_API_URL;
 
 const loadInitialState = () => {
   const token = localStorage.getItem("token") || null;
@@ -15,8 +16,11 @@ const authStore = create((set, get) => ({
     set(() => ({ token }));
   },
   logout: () => {
-    localStorage.removeItem("token"); // Ensure to clear all localStorage on logout
-    set(() => ({ token: null }));
+    localStorage.removeItem("token");
+
+    set(() => ({
+      token: null,
+    }));
   },
   setUserData: (userData) => {
     localStorage.setItem("userData", JSON.stringify(userData)); // Save the user data to localStorage
@@ -25,10 +29,11 @@ const authStore = create((set, get) => ({
   fetchUser: async () => {
     const { token, logout, setUserData } = get(); // Accessing current state and actions
     try {
-      const response = await fetch("http://localhost:8000/v1/general/me", {
+      const response = await fetch(`${API_URL}/general/me`, {
         method: "GET",
         headers: {
           Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
         },
       });
 

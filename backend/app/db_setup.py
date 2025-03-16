@@ -1,8 +1,7 @@
-from sqlalchemy import create_engine
-from sqlalchemy.orm import Session
-
 from app.api.v1.core.models import Base
 from app.settings import settings
+from sqlalchemy import create_engine
+from sqlalchemy.orm import Session
 
 # echo = True to see the SQL queries
 engine = create_engine(f"{settings.DB_URL}", echo=True)

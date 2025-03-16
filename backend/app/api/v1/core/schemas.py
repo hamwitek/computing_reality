@@ -11,6 +11,14 @@ class TokenSchema(BaseModel):
     token_type: str
 
 
+class PasswordResetRequestSchema(BaseModel):
+    email: EmailStr = Field(..., description="Email address for password reset")
+
+    model_config = ConfigDict(
+        json_schema_extra={"example": {"email": "user@example.com"}}
+    )
+
+
 # We use this when registering users
 class UserRegisterSchema(BaseModel):
     email: str
@@ -80,6 +88,7 @@ class UserSchema(BaseModel):
     created_at: datetime
     company_id: int | None = None
     course_enrollments: list[UserCourseEnrollmentSchema] | None = []
+    is_superuser: bool
 
     model_config = ConfigDict(from_attributes=True)
 

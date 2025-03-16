@@ -21,7 +21,6 @@ from app.security import (
     get_current_superuser,
     get_current_token,
     get_current_user,
-    get_password,
     hash_password,
     verify_password,
 )

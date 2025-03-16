@@ -13,24 +13,17 @@ export default function Footer() {
             </p>
           </div>
           <div className="flex space-x-6">
-
-
-            <Link to="/about">
-              <a className="text-gray-300 hover:text-gray-50">
-                About
-              </a>
+            <Link to="/about" className="text-gray-300 hover:text-gray-50">
+              About
             </Link>
 
-            <Link to="/contact">
-              <a className="text-gray-300 hover:text-gray-50">
-                Contact
-              </a>
+            <Link to="/contact" className="text-gray-300 hover:text-gray-50">
+              Contact
             </Link>
 
-            <a href="#" className="hover:text-gray-400 text-white">
+            <Link to="/privacy" className="text-gray-300 hover:text-gray-50">
               Privacy Policy
-            </a>
-
+            </Link>
           </div>
         </div>
         <div className="flex justify-center mt-8 space-x-6">

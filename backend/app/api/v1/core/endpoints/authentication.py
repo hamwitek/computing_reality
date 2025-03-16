@@ -2,11 +2,13 @@ from typing import Annotated
 
 from app.api.v1.core.models import Token, User
 from app.api.v1.core.schemas import (
+    PasswordResetRequestSchema,
     TokenSchema,
     UserOutSchema,
     UserRegisterSchema,
 )
 from app.db_setup import get_db
+from app.email import generate_password_reset_token, get_user_by_email
 from app.security import (
     create_database_token,
     get_current_token,
@@ -77,3 +79,28 @@ def logout(
     db.execute(delete(Token).where(Token.token == current_token.token))
     db.commit()
     return Response(status_code=status.HTTP_204_NO_CONTENT)
+
+
+@router.post("/password-reset/request", status_code=status.HTTP_200_OK)
+def request_password_reset(
+    reset_request: PasswordResetRequestSchema,
+    db: Session = Depends(get_db),
+):
+    """
+    Request a password reset email
+
+    This endpoint sends a password reset link to the user's email.
+    """
+    user = get_user_by_email(session=db, email=reset_request.email)
+    if not user:
+        # We return success even if the email doesn't exist for security reasons
+        return {
+            "message": "If the email exists in our system, a password reset link has been sent"
+        }
+
+    token = generate_password_reset_token(user_id=user.id, db=db)
+    # send_password_reset_email(reset_request.email, token)
+
+    return {
+        "message": "If the email exists in our system, a password reset link has been sent"
+    }

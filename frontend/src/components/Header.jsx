@@ -21,44 +21,29 @@ export default function Header() {
             </Link>
           </div>
           <nav className="flex space-x-4">
-
-            
-            <Link to="/">
-              <a src="/" className="text-gray-300 hover:text-gray-50">
-                Home
-              </a>
+            <Link to="/" className="text-gray-300 hover:text-gray-50">
+              Home
             </Link>
 
-            <Link to="/">
-              <a src="/" className="text-gray-300 hover:text-gray-50">
-                Projects
-              </a>
+            <Link to="/" className="text-gray-300 hover:text-gray-50">
+              Projects
             </Link>
 
-            <Link to="/">
-              <a className="text-gray-300 hover:text-gray-50">
-                Features
-              </a>
+            <Link to="/" className="text-gray-300 hover:text-gray-50">
+              Features
             </Link>
 
-            <Link to="/contact">
-              <a className="text-gray-300 hover:text-gray-50">
-                Contact
-              </a>
+            <Link to="/contact" className="text-gray-300 hover:text-gray-50">
+              Contact
             </Link>
 
-            <Link to="/login">
-              <a className="text-gray-300 hover:text-gray-50">
-                Login
-              </a>
+            <Link to="/login" className="text-gray-300 hover:text-gray-50">
+              Login
             </Link>
             
-            <Link to="/register">
-              <a className="text-gray-300 hover:text-gray-50">
-                Register
-              </a>
+            <Link to="/register" className="text-gray-300 hover:text-gray-50">
+              Register
             </Link>
-
           </nav>
         </div>
       </div>
