@@ -1,0 +1,35 @@
+{
+  "center": {
+    "lat": 59.312662900748826,
+    "lng": 18.049309725214172
+  },
+  "bounds": {
+    "north": 59.314436913966595,
+    "east": 18.05484044020288,
+    "south": 59.31088879497092,
+    "west": 18.043779010225464
+  },
+  "zoom": 17,
+  "scale": {
+    "metersPerPixelLat": 0.6095290121551468,
+    "metersPerPixelLng": 0.6095290128080755,
+    "pixelWidth": 1031,
+    "pixelHeight": 648,
+    "realWorldWidth": 628.4244122051258,
+    "realWorldHeight": 394.9747998765351
+  },
+  "timestamp": "2025-03-19T07:53:37.131Z",
+  "imageProperties": {
+    "width": 1031,
+    "height": 648,
+    "resolution": {
+      "metersPerPixelLat": 0.6095290121551468,
+      "metersPerPixelLng": 0.6095290128080755
+    },
+    "realWorldDimensions": {
+      "width": 628.4244122051258,
+      "height": 394.9747998765351,
+      "units": "meters"
+    }
+  }
+}
