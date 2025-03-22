@@ -64,56 +64,79 @@ export default function GoogleMaps() {
         if (!googleMapRef.current) return;
 
         const { center, zoom } = mapState;
-        const staticMapUrl = `https://maps.googleapis.com/maps/api/staticmap?center=${center.lat},${center.lng}&zoom=${zoom}&size=800x600&maptype=satellite&key=${GOOGLE_API_KEY}`;
+        const bounds = googleMapRef.current.getBounds();
+        const ne = bounds.getNorthEast();
+        const sw = bounds.getSouthWest();
         
-        fetch(staticMapUrl)
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-                setCapturedImage(staticMapUrl);
-                console.log('Map captured successfully!');
-            })
-            .catch(error => {
-                if (!error.message.includes('Tracking Prevention')) {
-                    console.error('Error capturing map:', error);
-                }
-            });
-    };
+        // Calculate real-world distances
+        const latDistance = Math.abs(ne.lat() - sw.lat());
+        const lngDistance = Math.abs(ne.lng() - sw.lng());
+        
+        // Get pixel dimensions
+        const mapDiv = mapRef.current;
+        const width = mapDiv.clientWidth;
+        const height = mapDiv.clientHeight;
+        
+        // Calculate meters per pixel (approximate)
+        const metersPerLat = 111319.9; // meters per degree latitude (approximate)
+        const metersPerLng = 111319.9 * Math.cos(center.lat * Math.PI / 180); // meters per degree longitude at this latitude
+        
+        const scale = {
+            metersPerPixelLat: (latDistance * metersPerLat) / height,
+            metersPerPixelLng: (lngDistance * metersPerLng) / width,
+            pixelWidth: width,
+            pixelHeight: height,
+            realWorldWidth: lngDistance * metersPerLng,
+            realWorldHeight: latDistance * metersPerLat
+        };
 
-    const downloadImage = async () => {
-        if (capturedImage) {
-            try {
-                const response = await fetch(capturedImage);
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-                const blob = await response.blob();
-                const imageUrl = window.URL.createObjectURL(blob);
-                
-                const link = document.createElement('a');
-                link.href = imageUrl;
-                link.download = 'captured-map.png';
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
-                window.URL.revokeObjectURL(imageUrl);
-            } catch (error) {
-                if (!error.message.includes('Tracking Prevention')) {
-                    console.error('Error downloading map:', error);
-                }
+        // Create static map URL with scale information
+        const staticWidth = Math.min(640, width);
+        const staticHeight = Math.round((staticWidth * height) / width);
+        
+        const staticMapUrl = `https://maps.googleapis.com/maps/api/staticmap?`
+            + `center=${center.lat},${center.lng}`
+            + `&zoom=${zoom}`
+            + `&size=${staticWidth}x${staticHeight}`
+            + `&maptype=satellite`
+            + `&scale=2`
+            + `&key=${GOOGLE_API_KEY}`;
+        
+        // Store both the image URL and scale information
+        setCapturedImage({
+            url: staticMapUrl,
+            scale: scale,
+            bounds: {
+                north: ne.lat(),
+                south: sw.lat(),
+                east: ne.lng(),
+                west: sw.lng()
             }
-        }
+        });
     };
 
     const exportCoordinates = () => {
-        if (!mapBounds || !mapState.center) return;
+        if (!mapBounds || !mapState.center || !capturedImage) return;
 
         const coordinateData = {
             center: mapState.center,
             bounds: mapBounds,
             zoom: mapState.zoom,
-            timestamp: new Date().toISOString()
+            scale: capturedImage.scale,
+            timestamp: new Date().toISOString(),
+            imageProperties: {
+                width: capturedImage.scale.pixelWidth,
+                height: capturedImage.scale.pixelHeight,
+                resolution: {
+                    metersPerPixelLat: capturedImage.scale.metersPerPixelLat,
+                    metersPerPixelLng: capturedImage.scale.metersPerPixelLng
+                },
+                realWorldDimensions: {
+                    width: capturedImage.scale.realWorldWidth,
+                    height: capturedImage.scale.realWorldHeight,
+                    units: 'meters'
+                }
+            }
         };
 
         const dataStr = JSON.stringify(coordinateData, null, 2);
@@ -121,16 +144,44 @@ export default function GoogleMaps() {
         const url = window.URL.createObjectURL(dataBlob);
         const link = document.createElement('a');
         link.href = url;
-        link.download = 'map-coordinates.json';
+        link.download = `map-coordinates_${mapState.center.lat.toFixed(4)}_${mapState.center.lng.toFixed(4)}_zoom${mapState.zoom}.json`;
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
         window.URL.revokeObjectURL(url);
     };
 
+    const downloadImage = async () => {
+        if (!capturedImage) return;
+        
+        try {
+            const response = await fetch(capturedImage.url);
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            const blob = await response.blob();
+            const imageUrl = window.URL.createObjectURL(blob);
+            
+            const { center } = mapState;
+            const filename = `map_${center.lat.toFixed(4)}_${center.lng.toFixed(4)}_zoom${mapState.zoom}.png`;
+            
+            const link = document.createElement('a');
+            link.href = imageUrl;
+            link.download = filename;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            window.URL.revokeObjectURL(imageUrl);
+        } catch (error) {
+            if (!error.message.includes('Tracking Prevention')) {
+                console.error('Error downloading map:', error);
+            }
+        }
+    };
+
     return (
         <section className="flex flex-col h-[70vh] items-center justify-center w-full bg-gray-200">
-            <div ref={mapRef} className="w-[50%] h-[80%]">
+            <div ref={mapRef} className="w-[50%] h-[70%]">
                 {/* Map will be rendered here */}
             </div>
             <div className="flex gap-4">

@@ -60,7 +60,7 @@ export default function LoginForm() {
         if (response.status === 200) {
           const data = await response.json();
           setToken(data.access_token); // Save the token in the global state
-          navigate("/dashboard");
+          navigate("/");
           // Handle successful login, e.g., storing the access token
           console.log(data);
         } else if (response.status === 400 || response.status === 401) {

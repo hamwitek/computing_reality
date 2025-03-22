@@ -29,13 +29,13 @@ export default function Header() {
               Projects
             </Link>
 
-            <Link to="/" className="text-gray-300 hover:text-gray-50">
+            {/* <Link to="/" className="text-gray-300 hover:text-gray-50">
               Features
-            </Link>
+            </Link> */}
 
-            <Link to="/contact" className="text-gray-300 hover:text-gray-50">
+            {/* <Link to="/contact" className="text-gray-300 hover:text-gray-50">
               Contact
-            </Link>
+            </Link> */}
 
             <Link to="/login" className="text-gray-300 hover:text-gray-50">
               Login
