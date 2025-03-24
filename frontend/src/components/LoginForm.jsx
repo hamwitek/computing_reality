@@ -6,7 +6,7 @@ export default function LoginForm() {
   const API_URL = import.meta.env.VITE_API_URL;
   const navigate = useNavigate();
 
-  const { setToken } = authStore();
+  const { setToken, fetchUser } = authStore();
 
   const [email, setEmail] = useState("");
   const [emailError, setEmailError] = useState("");
@@ -60,7 +60,12 @@ export default function LoginForm() {
         if (response.status === 200) {
           const data = await response.json();
           setToken(data.access_token); // Save the token in the global state
+          
+          // Fetch user data immediately after setting the token
+          await fetchUser();
+          
           navigate("/");
+          // navigate("/dashboard");
           // Handle successful login, e.g., storing the access token
           console.log(data);
         } else if (response.status === 400 || response.status === 401) {

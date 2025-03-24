@@ -9,10 +9,15 @@ from sqlalchemy import (
     Integer,
     String,
     Text,
+    LargeBinary,
     UniqueConstraint,
     func,
+    JSON,
 )
+# from sqlalchemy.dialects.postgresql import (JSON,)
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
+
+# from sqlalchemy.dialects.mssql import (IMAGE,)
 
 
 class Base(DeclarativeBase):
@@ -56,7 +61,8 @@ class PasswordResetToken(Base):
 class CompanyType(Base):
     __tablename__ = "company_types"
     name: Mapped[str]
-    companies: Mapped[List["Company"]] = relationship(back_populates="company_type")
+    companies: Mapped[List["Company"]] = relationship(
+        back_populates="company_type")
 
     def __repr__(self):
         return f"<CompanyType={self.name}>"
@@ -73,7 +79,8 @@ class Company(Base):
     website: Mapped[str] = mapped_column(nullable=True)
 
     # Relationships
-    company_type: Mapped["CompanyType"] = relationship(back_populates="companies")
+    company_type: Mapped["CompanyType"] = relationship(
+        back_populates="companies")
     company_type_id: Mapped[int] = mapped_column(
         ForeignKey("company_types.id", ondelete="SET NULL"), nullable=True
     )
@@ -138,7 +145,8 @@ class Course(Base):
 
     id: Mapped[int] = mapped_column(primary_key=True)
     name: Mapped[str] = mapped_column(String(200), unique=True, index=True)
-    description: Mapped[str | None] = mapped_column(String(1000), nullable=True)
+    description: Mapped[str | None] = mapped_column(
+        String(1000), nullable=True)
     created_at: Mapped[datetime] = mapped_column(
         server_default=func.now()  # Uses database server time
     )
@@ -158,15 +166,19 @@ class UserCourseEnrollment(Base):
 
     __tablename__ = "user_course_enrollments"
     __table_args__ = (
-        UniqueConstraint("user_id", "course_id", name="uix_user_course_enrollment"),
+        UniqueConstraint("user_id", "course_id",
+                         name="uix_user_course_enrollment"),
     )
 
-    user_id: Mapped[int] = mapped_column(ForeignKey("users.id"), primary_key=True)
-    course_id: Mapped[int] = mapped_column(ForeignKey("courses.id"), primary_key=True)
+    user_id: Mapped[int] = mapped_column(
+        ForeignKey("users.id"), primary_key=True)
+    course_id: Mapped[int] = mapped_column(
+        ForeignKey("courses.id"), primary_key=True)
     enrolled_at: Mapped[datetime] = mapped_column(
         server_default=func.now()  # Uses database server time
     )
-    status: Mapped[EnrollmentStatus] = mapped_column(default=EnrollmentStatus.ENROLLED)
+    status: Mapped[EnrollmentStatus] = mapped_column(
+        default=EnrollmentStatus.ENROLLED)
     completion_date: Mapped[datetime | None] = mapped_column(nullable=True)
     grade: Mapped[float | None] = mapped_column(
         nullable=True, comment="Final grade for the course (0-100)"
@@ -174,7 +186,38 @@ class UserCourseEnrollment(Base):
 
     # Relationships
     user: Mapped["User"] = relationship(back_populates="course_enrollments")
-    course: Mapped["Course"] = relationship(back_populates="student_enrollments")
+    course: Mapped["Course"] = relationship(
+        back_populates="student_enrollments")
 
     def __repr__(self) -> str:
         return f"<UserCourseEnrollment user_id={self.user_id} course_id={self.course_id} status={self.status.value}>"
+
+
+# class Project(Base):
+#     """project model representing available projects in the system"""
+
+#     __tablename__ = "projects"
+
+#     id: Mapped[int] = mapped_column(primary_key=True)
+#     name: Mapped[str] = mapped_column(String(200), unique=False, index=True)
+#     area_image: Mapped[bytes] = mapped_column(
+#         LargeBinary, unique=False, index=False, nullable=True
+#     )
+#     coordinates: Mapped[dict] = mapped_column(
+#         JSON, unique=False, index=False, nullable=True,
+#         comment="GeoJSON coordinates data for the project area"
+#     )
+#     model_3d: Mapped[bytes] = mapped_column(
+#         LargeBinary, unique=False, index=False, nullable=True
+#     )
+
+#     created_at: Mapped[datetime] = mapped_column(
+#         server_default=func.now()  # Uses database server time
+#     )
+
+#     # Relationships
+#     user_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
+#     user: Mapped["User"] = relationship(back_populates="tokens")
+
+#     def __repr__(self) -> str:
+#         return f"<Project {self.name}>"

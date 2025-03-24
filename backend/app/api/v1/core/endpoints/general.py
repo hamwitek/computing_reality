@@ -51,7 +51,8 @@ def add_company(company: CompanySchema, db: Session = Depends(get_db)):
     try:
         if company.company_type_id:
             company_type = db.scalars(
-                select(CompanyType).where(CompanyType.id == company.company_type_id)
+                select(CompanyType).where(
+                    CompanyType.id == company.company_type_id)
             ).one_or_none()
 
             if not company_type:
@@ -67,7 +68,8 @@ def add_company(company: CompanySchema, db: Session = Depends(get_db)):
 
     except IntegrityError:
         db.rollback()
-        raise HTTPException(status_code=400, detail="Company name already exists")
+        raise HTTPException(
+            status_code=400, detail="Company name already exists")
 
 
 @router.get("/company/{id}")
@@ -86,7 +88,8 @@ def delete_company(company_id: int, db: Session = Depends(get_db)):
     """
     Deletes a company based on an id
     """
-    db_company = db.scalars(select(Company).where(Company.id == company_id)).first()
+    db_company = db.scalars(select(Company).where(
+        Company.id == company_id)).first()
     if db_company is None:
         raise HTTPException(status_code=404, detail="Company not found")
     db.delete(db_company)
@@ -110,7 +113,8 @@ def update_company(
             select(Company).where(Company.name == update_name)
         ).first()
         if existing:
-            raise HTTPException(status_code=400, detail="Company name already exists")
+            raise HTTPException(
+                status_code=400, detail="Company name already exists")
 
     try:
         for key, value in company_info.model_dump(exclude_unset=True).items():
@@ -151,7 +155,8 @@ def list_companies_test(db: Session = Depends(get_db)):
 
     # Later in our code or template, we try to access company types:
     for company in companies:
-        print(f"Company {company.name} is of type: {company.company_type.name}")
+        print(
+            f"Company {company.name} is of type: {company.company_type.name}")
 
 
 @router.get("/companytype/full/{id}")
@@ -256,7 +261,8 @@ def update_user_profile(
     Update current user's profile information
     """
     # Get the user from the database
-    db_user = db.scalars(select(User).where(User.id == current_user.id)).first()
+    db_user = db.scalars(select(User).where(
+        User.id == current_user.id)).first()
 
     # Update user fields from provided data
     for key, value in user_update.model_dump(exclude_unset=True).items():
@@ -310,7 +316,8 @@ def change_password(
 
     try:
         # Get fresh user object from database
-        db_user = db.scalars(select(User).where(User.id == current_user.id)).first()
+        db_user = db.scalars(select(User).where(
+            User.id == current_user.id)).first()
         if not db_user:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,

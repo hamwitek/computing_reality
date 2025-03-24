@@ -3,23 +3,39 @@ from enum import Enum
 
 from pydantic import BaseModel, ConfigDict, EmailStr, Field
 
+from sqlalchemy import (
+    Boolean,
+    DateTime,
+    ForeignKey,
+    Integer,
+    String,
+    Text,
+    LargeBinary,
+    UniqueConstraint,
+    func,
+)
+from sqlalchemy.dialects.postgresql import (JSON,)
 
-### NEW SCHEMAS
+# NEW SCHEMAS
 # We use this for our auth
+
+
 class TokenSchema(BaseModel):
     access_token: str
     token_type: str
 
 
 class PasswordResetRequestSchema(BaseModel):
-    email: EmailStr = Field(..., description="Email address for password reset")
+    email: EmailStr = Field(...,
+                            description="Email address for password reset")
 
     model_config = ConfigDict(
         json_schema_extra={"example": {"email": "user@example.com"}}
     )
 
-
 # We use this when registering users
+
+
 class UserRegisterSchema(BaseModel):
     email: str
     last_name: str
@@ -29,8 +45,9 @@ class UserRegisterSchema(BaseModel):
 
     # TODO ADD VALIDATION
 
-
 # We use this to return user data
+
+
 class UserOutSchema(BaseModel):
     id: int
     email: str
@@ -39,16 +56,18 @@ class UserOutSchema(BaseModel):
     is_superuser: bool
     model_config = ConfigDict(from_attributes=True)
 
+# OLD SCHEMAS
 
-#### OLD SCHEMAS
+
 class EnrollmentStatus(str, Enum):
     ENROLLED = "enrolled"
     IN_PROGRESS = "in_progress"
     COMPLETED = "completed"
     DROPPED = "dropped"
 
-
 # Base schemas for minimal representation
+
+
 class CourseBase(BaseModel):
     name: str
     description: str | None = None
@@ -62,8 +81,9 @@ class UserCourseEnrollmentBase(BaseModel):
     grade: float | None = None
     model_config = ConfigDict(from_attributes=True)
 
-
 # Extended schemas for full representation
+
+
 class UserCourseEnrollmentSchema(UserCourseEnrollmentBase):
     enrolled_at: datetime
     completion_date: datetime | None = None
@@ -99,7 +119,8 @@ class CourseCreateSchema(BaseModel):
     name: str = Field(
         ..., min_length=1, max_length=200, description="The name of the course"
     )
-    description: str = Field(None, max_length=1000, description="Course description")
+    description: str = Field(None, max_length=1000,
+                             description="Course description")
     is_active: bool = Field(
         True, description="Whether the course is active and available for enrollment"
     )
@@ -127,8 +148,9 @@ class UserCourseEnrollmentUpdate(BaseModel):
         json_schema_extra={"example": {"status": "completed", "grade": 95.5}}
     )
 
-
 # Company related schemas (kept from original)
+
+
 class CompanySchema(BaseModel):
     name: str = Field(
         ...,
@@ -144,7 +166,8 @@ class CompanySchema(BaseModel):
     email: EmailStr = Field(
         description="The contact email for the company. Optional and must be a valid email format."
     )
-    description: str = Field(description="A description of the company. Optional.")
+    description: str = Field(
+        description="A description of the company. Optional.")
     analytics_module: bool = Field(
         default=None,
         description="Indicates whether the company uses the analytics module. Required.",
@@ -194,8 +217,9 @@ class CompanyTypeFullSchema(CompanyTypeSchema):
 class CompanyAndTypeSchema(CompanySchema):
     company_type_id: int
 
-
 # Add these schemas to your existing schemas.py file
+
+
 class UserUpdateSchema(BaseModel):
     first_name: str | None = None
     last_name: str | None = None
@@ -206,3 +230,14 @@ class UserUpdateSchema(BaseModel):
 class PasswordChangeSchema(BaseModel):
     current_password: str
     new_password: str
+
+
+# class ProjectSchema(BaseModel):
+#     id: int
+#     name: str
+#     area_image: bytes | None = None
+#     coordinates: dict | None = None
+#     model_3d: bytes | None = None
+#     created_at: datetime
+
+#     model_config = ConfigDict(from_attributes=True)

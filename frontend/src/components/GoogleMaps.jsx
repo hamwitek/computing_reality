@@ -12,6 +12,7 @@ export default function GoogleMaps() {
         zoom: 17
     });
     const [mapBounds, setMapBounds] = useState(null);
+    const [token, setToken] = useState(null);
 
     useEffect(() => {
         const loader = new Loader({
@@ -197,6 +198,83 @@ export default function GoogleMaps() {
     };
     
 
+    const convertToGeoTIFF = async () => {
+        if (!mapRef.current || !mapBounds || !capturedImage) return;
+    
+        try {
+            // Capture the map as canvas
+            const canvas = await html2canvas(mapRef.current, {
+                useCORS: true,
+                logging: false,
+                allowTaint: true
+            });
+            
+            // Convert canvas to blob
+            const blob = await new Promise(resolve => {
+                canvas.toBlob(resolve, 'image/png');
+            });
+            
+            // Create coordinate data
+            const coordinateData = {
+                center: mapState.center,
+                bounds: mapBounds,
+                zoom: mapState.zoom,
+                scale: capturedImage.scale,
+                timestamp: new Date().toISOString(),
+                imageProperties: {
+                    width: capturedImage.scale.pixelWidth,
+                    height: capturedImage.scale.pixelHeight,
+                    resolution: {
+                        metersPerPixelLat: capturedImage.scale.metersPerPixelLat,
+                        metersPerPixelLng: capturedImage.scale.metersPerPixelLng
+                    },
+                    realWorldDimensions: {
+                        width: capturedImage.scale.realWorldWidth,
+                        height: capturedImage.scale.realWorldHeight,
+                        units: 'meters'
+                    }
+                }
+            };
+            
+            // Create FormData
+            const formData = new FormData();
+            formData.append('image', blob, `map_${mapState.center.lat.toFixed(4)}_${mapState.center.lng.toFixed(4)}.png`);
+            formData.append('coordinates', JSON.stringify(coordinateData));
+            
+            console.log("Sending request to backend...");
+            
+            // Modified fetch request
+            const response = await fetch('http://localhost:8000/v1/convert-to-tiff/', {
+                method: 'POST',
+                headers: {
+                },
+                body: formData,
+            });
+            
+            console.log("Response status:", response.status);
+            
+            if (!response.ok) {
+                const errorText = await response.text();
+                throw new Error(`Server returned ${response.status}: ${errorText}`);
+            }
+            
+            // Get the GeoTIFF file and download it
+            const tiffBlob = await response.blob();
+            const url = window.URL.createObjectURL(tiffBlob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `map_${mapState.center.lat.toFixed(4)}_${mapState.center.lng.toFixed(4)}.tif`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            window.URL.revokeObjectURL(url);
+            
+        } catch (error) {
+            console.error("Error converting to GeoTIFF:", error);
+            alert(`Failed to convert image to GeoTIFF: ${error.message}`);
+        }
+    };
+
     return (
         <section className="flex flex-col h-[90vh] items-center justify-center w-full bg-gray-200">
             <div ref={mapRef} className="w-[70%] h-[90%]">
@@ -216,12 +294,20 @@ export default function GoogleMaps() {
                     Export Coordinates
                 </button>
                 {capturedImage && (
-                    <button 
-                        onClick={downloadImage}
-                        className="mt-4 px-4 py-2 bg-gray-300 text-gray-800 rounded hover:bg-gray-400 transition-colors duration-200"
-                    >
-                        Download Map
-                    </button>
+                    <>
+                        <button 
+                            onClick={downloadImage}
+                            className="mt-4 px-4 py-2 bg-gray-300 text-gray-800 rounded hover:bg-gray-400 transition-colors duration-200"
+                        >
+                            Download Map
+                        </button>
+                        <button 
+                            onClick={convertToGeoTIFF}
+                            className="mt-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors duration-200"
+                        >
+                            Convert to GeoTIFF
+                        </button>
+                    </>
                 )}
             </div>
             {/* {mapBounds && (
