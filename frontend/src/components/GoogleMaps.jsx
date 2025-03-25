@@ -198,7 +198,7 @@ export default function GoogleMaps() {
     };
     
 
-    const convertToGeoTIFF = async () => {
+    const downloadResults = async () => {
         if (!mapRef.current || !mapBounds || !capturedImage) return;
     
         try {
@@ -243,8 +243,7 @@ export default function GoogleMaps() {
             
             console.log("Sending request to backend...");
             
-            // Modified fetch request
-            const response = await fetch('http://localhost:8000/v1/convert-to-tiff/', {
+            const response = await fetch('http://localhost:8000/v1/download-results/', {
                 method: 'POST',
                 headers: {
                 },
@@ -258,20 +257,20 @@ export default function GoogleMaps() {
                 throw new Error(`Server returned ${response.status}: ${errorText}`);
             }
             
-            // Get the GeoTIFF file and download it
-            const tiffBlob = await response.blob();
-            const url = window.URL.createObjectURL(tiffBlob);
+            // Download the zip file
+            const zipBlob = await response.blob();
+            const url = window.URL.createObjectURL(zipBlob);
             const link = document.createElement('a');
             link.href = url;
-            link.download = `map_${mapState.center.lat.toFixed(4)}_${mapState.center.lng.toFixed(4)}.tif`;
+            link.download = `map_results_${mapState.center.lat.toFixed(4)}_${mapState.center.lng.toFixed(4)}.zip`;
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
             window.URL.revokeObjectURL(url);
             
         } catch (error) {
-            console.error("Error converting to GeoTIFF:", error);
-            alert(`Failed to convert image to GeoTIFF: ${error.message}`);
+            console.error("Error downloading results:", error);
+            alert(`Failed to download results: ${error.message}`);
         }
     };
 
@@ -302,10 +301,10 @@ export default function GoogleMaps() {
                             Download Map
                         </button>
                         <button 
-                            onClick={convertToGeoTIFF}
+                            onClick={downloadResults}
                             className="mt-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors duration-200"
                         >
-                            Convert to GeoTIFF
+                            Download Results
                         </button>
                     </>
                 )}

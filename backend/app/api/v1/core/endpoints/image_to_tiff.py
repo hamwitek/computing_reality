@@ -65,11 +65,11 @@ def convert_image_to_tiff(image_path, output_path, json_path):
     return output_path
 
 
-# Allow script to be run directly for testing/debugging
-if __name__ == "__main__":
-    # File paths
-    image_path = "image_to_analyse/map_capture.png"
-    output_path = "image_to_analyse/map_capture.tif"
-    json_path = "image_to_analyse/map-coordinates.json"
+# # Allow script to be run directly for testing/debugging
+# if __name__ == "__main__":
+#     # File paths
+#     image_path = "image_to_analyse/map_capture.png"
+#     output_path = "image_to_analyse/map_capture.tif"
+#     json_path = "image_to_analyse/map-coordinates.json"
 
-    convert_image_to_tiff(image_path, output_path, json_path)
+#     convert_image_to_tiff(image_path, output_path, json_path)

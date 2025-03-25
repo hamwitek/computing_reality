@@ -185,7 +185,7 @@ def generate_3dmfile(png_image_path, tiff_image_path, json_file, output_dir=None
         # }
 
         # return output_image_path
-        return output_rhino_file
+        return [output_rhino_file, output_image_path]
     except Exception as e:
         error_message = f"Error generating 3DM file: {str(e)}"
         print(error_message)

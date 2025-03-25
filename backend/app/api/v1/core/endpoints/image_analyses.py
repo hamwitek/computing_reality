@@ -6,6 +6,7 @@ import os
 from tempfile import NamedTemporaryFile
 import json
 from typing import Dict, Any
+import zipfile
 
 # Fix the import by using relative import
 from .image_to_tiff import convert_image_to_tiff
@@ -17,8 +18,8 @@ router = APIRouter()
 # Change this from @app.post to @router.post
 
 
-@router.post("/convert-to-tiff/")
-async def convert_to_tiff(
+@router.post("/download-results/")
+async def download_results(
     image: UploadFile = File(...),
     coordinates: str = Form(...)
 ):
@@ -42,17 +43,21 @@ async def convert_to_tiff(
     # Convert image to tiff
     convert_image_to_tiff(temp_image_path, output_tiff_path, temp_json_path)
 
-    rhino_3dm_file = generate_3dmfile(
+    list_of_files = generate_3dmfile(
         temp_image_path, output_tiff_path, temp_json_path)
 
-    # Return the GeoTIFF file
-    # return FileResponse(
-    #     output_tiff_path,
-    #     media_type="image/tiff",
-    #     filename=f"map_capture_{os.path.splitext(image.filename)[0]}.tif"
-    # )
+    list_of_files.extend([temp_image_path, temp_json_path])
+
+    # Create a zip file containing all files
+    zip_path = "temp/results.zip"
+    with zipfile.ZipFile(zip_path, 'w') as zipf:
+        for file in list_of_files:
+            # Get just the filename without the path
+            filename = os.path.basename(file)
+            zipf.write(file, filename)
+
     return FileResponse(
-        rhino_3dm_file,
-        media_type="application/octet-stream",
-        filename=f"map_capture_{os.path.splitext(image.filename)[0]}.3dm"
+        zip_path,
+        media_type="application/zip",
+        filename="map_results.zip"
     )

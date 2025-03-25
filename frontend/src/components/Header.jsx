@@ -16,8 +16,10 @@ export default function Header() {
   }
 
   useEffect(() => {
-    fetchUser();
-  }, []);
+    if (token) {
+      fetchUser();
+    }
+  }, [token]);
   
 
 
