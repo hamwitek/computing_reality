@@ -64,7 +64,7 @@ export default function LoginForm() {
           // Fetch user data immediately after setting the token
           await fetchUser();
           
-          navigate("/");
+          navigate("/projectstart");
           // navigate("/dashboard");
           // Handle successful login, e.g., storing the access token
           console.log(data);

@@ -18,6 +18,7 @@ const authStore = create((set, get) => ({
   logout: () => {
     localStorage.removeItem("token");
     localStorage.removeItem("userData");
+    localStorage.removeItem("project_name");
 
     set(() => ({
       token: null,

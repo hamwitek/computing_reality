@@ -5,6 +5,7 @@ import "./index.css";
 import Layout from "./pages/Layout.jsx";
 import StartPage from "./pages/StartPage.jsx";
 import ProjectStart from "./pages/ProjectStart.jsx";
+import Projects from "./pages/ProjectsPage.jsx";
 import AboutPage from "./pages/About.jsx";
 import ContactPage from "./pages/ContactPage.jsx";
 import LoginPage from "./pages/LoginPage.jsx";
@@ -17,8 +18,12 @@ const router = createBrowserRouter([
     element: <Layout />,
     children: [
       {
-        path: "/start",
+        path: "/projectstart",
         element: <ProjectStart />,
+      },
+      {
+        path: "/projects",
+        element: <Projects />,
       },
       {
         path: "/",

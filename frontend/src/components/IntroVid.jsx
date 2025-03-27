@@ -6,7 +6,12 @@ export default function IntroVid() {
   const navigate = useNavigate();
 
   const handleClick = () => {
-    navigate('/start');
+    const token = localStorage.getItem('token');
+    if (token) {
+      navigate('/projectstart');
+    } else {
+      navigate('/login');
+    }
   };
 
   return (

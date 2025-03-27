@@ -37,7 +37,7 @@ def list_companies(db: Session = Depends(get_db)):
     programs = db.scalars(select(Company)).all()
     if not programs:
         raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail="No companies found"
+            status_code=status.HTTP_404_NOT_FOUND, detail="No companies foundhhhhhhhhhhhhhhhhhhhhhhhhhhh"
         )
     return programs
 

@@ -129,10 +129,6 @@ export default function GoogleMaps() {
                 west: sw.lng()
             }
         });
-
-
-
-
     };
     
 
@@ -199,41 +195,9 @@ export default function GoogleMaps() {
             console.error("Error capturing map:", error);
             alert("Failed to capture the map. Make sure the map is fully loaded.");
         }
-
-        async function updateProjectArea(dataBlob, canvas) {
-            try {
-                const token = localStorage.getItem('token');
-                const projectName = localStorage.getItem('project_name');
-                
-    
-                const response = await fetch(`${API_URL}/project/${projectName}/area`, {
-                    method: "PUT",
-                    headers: {
-                        "Content-Type": "application/json",
-                        "Authorization": `Bearer ${token}`
-                    },
-                    body: JSON.stringify({
-                        coordinates: dataBlob,  // Your GeoJSON coordinates
-                        area_image: canvas    // Base64 encoded image
-                    }),
-                });
-                
-                const data = await response.json();
-    
-                if (response.status === 200) {
-                    console.log("Area and coordinates updated successfully");
-                } else {
-                    console.log("Something went wrong");
-                    console.log("Error details:", data.detail);
-                    throw new Error("Error from the server");
-                }
-            } catch (error) {
-                console.log("Error updating project area:", error);
-            }
-        }
     };
     
-   
+
     const downloadResults = async () => {
         if (!mapRef.current || !mapBounds || !capturedImage) return;
     
@@ -277,8 +241,8 @@ export default function GoogleMaps() {
             formData.append('image', blob, `map_${mapState.center.lat.toFixed(4)}_${mapState.center.lng.toFixed(4)}.png`);
             formData.append('coordinates', JSON.stringify(coordinateData));
             
-            // start image analysis in the backend
             console.log("Sending request to backend...");
+            
             const response = await fetch('http://localhost:8000/v1/download-results/', {
                 method: 'POST',
                 headers: {
@@ -310,121 +274,6 @@ export default function GoogleMaps() {
         }
     };
 
-
-    // async function updateProjectArea() {
-    //     try {
-    //         const token = localStorage.getItem('token');
-    //         const projectName = localStorage.getItem('project_name');
-            
-
-    //         const response = await fetch(`${API_URL}/project/${projectName}/area`, {
-    //             method: "PUT",
-    //             headers: {
-    //                 "Content-Type": "application/json",
-    //                 "Authorization": `Bearer ${token}`
-    //             },
-
-
-  
-                
-    //             // Capture the map as canvas
-    //             const canvas = await html2canvas(mapRef.current, {
-    //                 useCORS: true,
-    //                 logging: false,
-    //                 allowTaint: true
-    //             });
-                
-    //             // Convert canvas to blob
-    //             const blob = await new Promise(resolve => {
-    //                 canvas.toBlob(resolve, 'image/png');
-    //             });
-                
-    //             // Create coordinate data
-    //             const coordinateData = {
-    //                 center: mapState.center,
-    //                 bounds: mapBounds,
-    //                 zoom: mapState.zoom,
-    //                 scale: capturedImage.scale,
-    //                 timestamp: new Date().toISOString(),
-    //                 imageProperties: {
-    //                     width: capturedImage.scale.pixelWidth,
-    //                     height: capturedImage.scale.pixelHeight,
-    //                     resolution: {
-    //                         metersPerPixelLat: capturedImage.scale.metersPerPixelLat,
-    //                         metersPerPixelLng: capturedImage.scale.metersPerPixelLng
-    //                     },
-    //                     realWorldDimensions: {
-    //                         width: capturedImage.scale.realWorldWidth,
-    //                         height: capturedImage.scale.realWorldHeight,
-    //                         units: 'meters'
-    //                     }
-    //                 }
-    //             };
-                    
-    //                 // Create FormData
-    //                 const formData = new FormData();
-    //                 formData.append('image', blob, `map_${mapState.center.lat.toFixed(4)}_${mapState.center.lng.toFixed(4)}.png`);
-    //                 formData.append('coordinates', JSON.stringify(coordinateData));
-
-
-    //             body: JSON.stringify({
-    //                 coordinates: formData.coordinates,  // Your GeoJSON coordinates
-    //                 area_image: formData.image    // Base64 encoded image
-    //             }),
-    //         });
-            
-    //         const data = await response.json();
-
-    //         if (response.status === 200) {
-    //             console.log("Area and coordinates updated successfully");
-    //         } else {
-    //             console.log("Something went wrong");
-    //             console.log("Error details:", data.detail);
-    //             throw new Error("Error from the server");
-    //         }
-    //     } catch (error) {
-    //         console.log("Error updating project area:", error);
-    //     }
-    // }
-
-
-    // async function updateProjectArea(coordinates, imageData) {
-    //     try {
-    //         const token = localStorage.getItem('token');
-    //         const projectName = localStorage.getItem('project_name');
-            
-    //         // Convert image data to base64 if it's not already
-    //         const imageBase64 = imageData.startsWith('data:image') 
-    //             ? imageData.split(',')[1] 
-    //             : imageData;
-
-    //         const response = await fetch(`${API_URL}/project/${projectName}/area`, {
-    //             method: "PUT",
-    //             headers: {
-    //                 "Content-Type": "application/json",
-    //                 "Authorization": `Bearer ${token}`
-    //             },
-    //             body: JSON.stringify({
-    //                 coordinates: coordinates,  // Your GeoJSON coordinates
-    //                 area_image: imageBase64    // Base64 encoded image
-    //             }),
-    //         });
-            
-    //         const data = await response.json();
-
-    //         if (response.status === 200) {
-    //             console.log("Area and coordinates updated successfully");
-    //         } else {
-    //             console.log("Something went wrong");
-    //             console.log("Error details:", data.detail);
-    //             throw new Error("Error from the server");
-    //         }
-    //     } catch (error) {
-    //         console.log("Error updating project area:", error);
-    //     }
-    // }
-
-
     return (
         <section className="flex flex-col h-[90vh] items-center justify-center w-full bg-gray-200">
             <div ref={mapRef} className="w-[70%] h-[90%]">
@@ -438,21 +287,18 @@ export default function GoogleMaps() {
                     Capture Map
                 </button>
                 <button 
-                    onClick={() => {
-                        exportCoordinates();
-                        downloadImage();
-                    }}
+                    onClick={exportCoordinates}
                     className="mt-4 px-4 py-2 bg-gray-300 text-gray-800 rounded hover:bg-gray-400 transition-colors duration-200"
                 >
-                    Export Map Data
+                    Export Coordinates
                 </button>
                 {capturedImage && (
                     <>
                         <button 
-                            onClick={() => updateProjectArea(dataBlob, canvas)}
+                            onClick={downloadImage}
                             className="mt-4 px-4 py-2 bg-gray-300 text-gray-800 rounded hover:bg-gray-400 transition-colors duration-200"
                         >
-                            tttttttttttttttttttt
+                            Download Map
                         </button>
                         <button 
                             onClick={downloadResults}
@@ -463,7 +309,12 @@ export default function GoogleMaps() {
                     </>
                 )}
             </div>
-
+            {/* {mapBounds && (
+                <div className="mt-4 text-sm text-gray-600">
+                    <p>Center: {mapState.center.lat.toFixed(6)}, {mapState.center.lng.toFixed(6)}</p>
+                    <p>Zoom: {mapState.zoom}</p>
+                </div>
+            )} */}
         </section>
     );
 }

@@ -123,6 +123,9 @@ class User(Base):
         back_populates="user"
     )
 
+    # Add this to your existing relationships
+    projects: Mapped[List["Project"]] = relationship(back_populates="user")
+
     # Auth
     is_superuser: Mapped[bool] = mapped_column(Boolean, default=False)
     tokens: Mapped[list["Token"]] = relationship(back_populates="user")
@@ -193,31 +196,33 @@ class UserCourseEnrollment(Base):
         return f"<UserCourseEnrollment user_id={self.user_id} course_id={self.course_id} status={self.status.value}>"
 
 
-# class Project(Base):
-#     """project model representing available projects in the system"""
+class Project(Base):
+    """project model representing available projects in the system"""
 
-#     __tablename__ = "projects"
+    __tablename__ = "projects"
 
-#     id: Mapped[int] = mapped_column(primary_key=True)
-#     name: Mapped[str] = mapped_column(String(200), unique=False, index=True)
-#     area_image: Mapped[bytes] = mapped_column(
-#         LargeBinary, unique=False, index=False, nullable=True
-#     )
-#     coordinates: Mapped[dict] = mapped_column(
-#         JSON, unique=False, index=False, nullable=True,
-#         comment="GeoJSON coordinates data for the project area"
-#     )
-#     model_3d: Mapped[bytes] = mapped_column(
-#         LargeBinary, unique=False, index=False, nullable=True
-#     )
+    id: Mapped[int] = mapped_column(primary_key=True)
+    name: Mapped[str] = mapped_column(String(200), unique=True, index=True)
+    area_image: Mapped[bytes] = mapped_column(
+        LargeBinary, unique=False, index=False, nullable=True
+    )
+    coordinates: Mapped[dict] = mapped_column(
+        JSON, unique=False, index=False, nullable=True,
+        comment="GeoJSON coordinates data for the project area"
+    )
+    result_image: Mapped[bytes] = mapped_column(
+        LargeBinary, unique=False, index=False, nullable=True
+    )
+    model_3d: Mapped[bytes] = mapped_column(
+        LargeBinary, unique=False, index=False, nullable=True
+    )
+    created_at: Mapped[datetime] = mapped_column(
+        server_default=func.now()  # Uses database server time
+    )
 
-#     created_at: Mapped[datetime] = mapped_column(
-#         server_default=func.now()  # Uses database server time
-#     )
+    # Relationships
+    user_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
+    user: Mapped["User"] = relationship(back_populates="projects")
 
-#     # Relationships
-#     user_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
-#     user: Mapped["User"] = relationship(back_populates="tokens")
-
-#     def __repr__(self) -> str:
-#         return f"<Project {self.name}>"
+    def __repr__(self) -> str:
+        return f"<Project {self.name}>"

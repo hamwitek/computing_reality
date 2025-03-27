@@ -92,7 +92,8 @@ def delete_course(
     """Delete a course (superuser only)"""
     # First delete all enrollments associated with this course
     db.execute(
-        delete(UserCourseEnrollment).where(UserCourseEnrollment.course_id == course_id)
+        delete(UserCourseEnrollment).where(
+            UserCourseEnrollment.course_id == course_id)
     )
 
     # Then delete the course itself

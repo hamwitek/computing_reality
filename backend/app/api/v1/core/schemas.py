@@ -13,8 +13,9 @@ from sqlalchemy import (
     LargeBinary,
     UniqueConstraint,
     func,
+    JSON,
 )
-from sqlalchemy.dialects.postgresql import (JSON,)
+# from sqlalchemy.dialects.postgresql import (JSON,)
 
 # NEW SCHEMAS
 # We use this for our auth
@@ -33,30 +34,13 @@ class PasswordResetRequestSchema(BaseModel):
         json_schema_extra={"example": {"email": "user@example.com"}}
     )
 
-# We use this when registering users
+
+class PasswordChangeSchema(BaseModel):
+    current_password: str
+    new_password: str
 
 
-class UserRegisterSchema(BaseModel):
-    email: str
-    last_name: str
-    first_name: str
-    password: str
-    model_config = ConfigDict(from_attributes=True)
-
-    # TODO ADD VALIDATION
-
-# We use this to return user data
-
-
-class UserOutSchema(BaseModel):
-    id: int
-    email: str
-    last_name: str
-    first_name: str
-    is_superuser: bool
-    model_config = ConfigDict(from_attributes=True)
-
-# OLD SCHEMAS
+# Schemas for Enrollment
 
 
 class EnrollmentStatus(str, Enum):
@@ -65,52 +49,13 @@ class EnrollmentStatus(str, Enum):
     COMPLETED = "completed"
     DROPPED = "dropped"
 
-# Base schemas for minimal representation
+# Schemas for course
 
 
 class CourseBase(BaseModel):
     name: str
     description: str | None = None
     is_active: bool = True
-
-
-class UserCourseEnrollmentBase(BaseModel):
-    course_id: int
-    user_id: int
-    status: EnrollmentStatus = EnrollmentStatus.ENROLLED
-    grade: float | None = None
-    model_config = ConfigDict(from_attributes=True)
-
-# Extended schemas for full representation
-
-
-class UserCourseEnrollmentSchema(UserCourseEnrollmentBase):
-    enrolled_at: datetime
-    completion_date: datetime | None = None
-
-    model_config = ConfigDict(from_attributes=True)
-
-
-class CourseSchema(CourseBase):
-    id: int
-    created_at: datetime
-    student_enrollments: list[UserCourseEnrollmentSchema] | None = []
-
-    model_config = ConfigDict(from_attributes=True)
-
-
-class UserSchema(BaseModel):
-    id: int
-    email: EmailStr
-    first_name: str
-    last_name: str
-    disabled: bool = False
-    created_at: datetime
-    company_id: int | None = None
-    course_enrollments: list[UserCourseEnrollmentSchema] | None = []
-    is_superuser: bool
-
-    model_config = ConfigDict(from_attributes=True)
 
 
 class CourseCreateSchema(BaseModel):
@@ -129,6 +74,29 @@ class CourseCreateSchema(BaseModel):
 class CourseUpdate(CourseBase):
     name: str | None = None
     is_active: bool | None = None
+
+
+class UserCourseEnrollmentBase(BaseModel):
+    course_id: int
+    user_id: int
+    status: EnrollmentStatus = EnrollmentStatus.ENROLLED
+    grade: float | None = None
+    model_config = ConfigDict(from_attributes=True)
+
+
+class UserCourseEnrollmentSchema(UserCourseEnrollmentBase):
+    enrolled_at: datetime
+    completion_date: datetime | None = None
+
+    model_config = ConfigDict(from_attributes=True)
+
+
+class CourseSchema(CourseBase):
+    id: int
+    created_at: datetime
+    student_enrollments: list[UserCourseEnrollmentSchema] | None = []
+
+    model_config = ConfigDict(from_attributes=True)
 
 
 class UserCourseEnrollmentCreate(BaseModel):
@@ -217,7 +185,41 @@ class CompanyTypeFullSchema(CompanyTypeSchema):
 class CompanyAndTypeSchema(CompanySchema):
     company_type_id: int
 
-# Add these schemas to your existing schemas.py file
+
+# Schemas for users
+
+class UserRegisterSchema(BaseModel):
+    email: str
+    last_name: str
+    first_name: str
+    password: str
+    model_config = ConfigDict(from_attributes=True)
+
+    # TODO ADD VALIDATION
+
+
+class UserOutSchema(BaseModel):
+    # We use this to return user data
+    id: int
+    email: str
+    last_name: str
+    first_name: str
+    is_superuser: bool
+    model_config = ConfigDict(from_attributes=True)
+
+
+class UserSchema(BaseModel):
+    id: int
+    email: EmailStr
+    first_name: str
+    last_name: str
+    disabled: bool = False
+    created_at: datetime
+    company_id: int | None = None
+    course_enrollments: list[UserCourseEnrollmentSchema] | None = []
+    is_superuser: bool
+
+    model_config = ConfigDict(from_attributes=True)
 
 
 class UserUpdateSchema(BaseModel):
@@ -227,17 +229,36 @@ class UserUpdateSchema(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
 
-class PasswordChangeSchema(BaseModel):
-    current_password: str
-    new_password: str
+# Schemas for projects
 
 
-# class ProjectSchema(BaseModel):
-#     id: int
-#     name: str
-#     area_image: bytes | None = None
-#     coordinates: dict | None = None
-#     model_3d: bytes | None = None
-#     created_at: datetime
+class ProjectSchema(BaseModel):
+    id: int
+    name: str
+    area_image: bytes | None = None
+    coordinates: dict | None = None
+    result_image: bytes | None = None
+    model_3d: bytes | None = None
+    created_at: datetime
 
-#     model_config = ConfigDict(from_attributes=True)
+    model_config = ConfigDict(from_attributes=True)
+
+
+class ProjectCreateSchema(BaseModel):
+    """Base schema for course data"""
+
+    name: str = Field(
+        ..., min_length=1, max_length=200, description="The name of the course"
+    )
+
+
+class ProjectNameUpdateSchema(BaseModel):
+    name: str | None = None
+    model_config = ConfigDict(from_attributes=True)
+
+
+class ProjectAreaUpdateSchema(BaseModel):
+    coordinates: dict | None = None
+    area_image: bytes | None = None
+
+    model_config = ConfigDict(from_attributes=True)

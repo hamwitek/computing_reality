@@ -46,7 +46,7 @@ export default function Header() {
               Home
             </Link>
 
-            <Link to="/start" className="text-gray-300 hover:text-gray-50">
+            <Link to="/projectstart" className="text-gray-300 hover:text-gray-50">
               Projects
             </Link>
 
