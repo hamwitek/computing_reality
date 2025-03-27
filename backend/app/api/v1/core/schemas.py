@@ -257,8 +257,12 @@ class ProjectNameUpdateSchema(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
 
-class ProjectAreaUpdateSchema(BaseModel):
+class ProjectCoordinateUpdateSchema(BaseModel):
     coordinates: dict | None = None
-    area_image: bytes | None = None
+    model_config = ConfigDict(from_attributes=True)
 
+
+class ProjectAreaUpdateSchema(BaseModel):
+
+    area_image: bytes | None = None
     model_config = ConfigDict(from_attributes=True)

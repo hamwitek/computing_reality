@@ -103,14 +103,14 @@ export default function ProjectName() {
   return (
     <>
       <form className="p-4 bg-white rounded-lg shadow-md">
-        <div className="flex gap-2 items-end">
-          <div className="flex-grow">
-            <label 
-              htmlFor="projectName" 
-              className="block text-gray-700 text-sm font-bold mb-2"
-            >
-              Project Name:
-            </label>
+        <div className="flex gap-2 items-center">
+          <label 
+            htmlFor="projectName" 
+            className="text-gray-700 text-sm font-bold whitespace-nowrap"
+          >
+            Project Name:
+          </label>
+          <div className="flex-grow flex gap-2">
             <input
               type="text"
               id="projectName"
@@ -121,11 +121,6 @@ export default function ProjectName() {
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-200"
               required
             />
-            {nameError && (
-              <p className="text-red-500 text-sm mt-1">{nameError}</p>
-            )}
-          </div>
-          <div className="flex gap-2">
             {!showUpdate && (
               <button
                 onClick={submitProjectName}
@@ -144,6 +139,9 @@ export default function ProjectName() {
             )}
           </div>
         </div>
+        {nameError && (
+          <p className="text-red-500 text-sm mt-1">{nameError}</p>
+        )}
       </form>
     </>
   );
