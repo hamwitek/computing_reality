@@ -143,7 +143,7 @@ def update_project_area_image(
     db: Session = Depends(get_db),
 ):
     """
-    Update project area image and coordinates
+    Update project area image
     """
     try:
         # Get the project from the database
