@@ -4,6 +4,7 @@ import html2canvas from "html2canvas";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
+
 export default function GoogleMaps() {
     const GOOGLE_API_KEY = import.meta.env.VITE_GOOGLE_API_KEY;
     const mapRef = useRef(null);
@@ -325,7 +326,7 @@ export default function GoogleMaps() {
             
             // start image analysis in the backend
             console.log("Sending request to backend...");
-            const response = await fetch('http://localhost:8000/v1/download-results/', {
+            const response = await fetch(`${API_URL}/download-results/`, {
                 method: 'POST',
                 headers: {
                 },
